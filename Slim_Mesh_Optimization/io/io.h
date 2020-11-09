@@ -1,10 +1,10 @@
 #pragma once
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <iomanip>
 #include "../common/global_types.h"
-#include "../common/global_functions.h"
 #include <igl/readOBJ.h>
 #include <igl/readSTL.h>
 #include <igl/readWRL.h>
@@ -32,4 +32,5 @@ public:
 	bool read_feature_Graph_FGRAPH(Mesh_Feature &mf, std::string path);
 	void write_feature_Graph_FGRAPH(Mesh_Feature &mf, std::string path);
 };
+
 

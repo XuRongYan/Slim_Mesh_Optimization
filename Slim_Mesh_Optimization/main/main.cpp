@@ -7,11 +7,14 @@
 
 #include "parse_config_file.h"
 #include "../timer.h"
+#include "../io/io.h"
 
 
 
 
 using namespace std;
+
+h_io io;
 
 int grid_method(common::arguments &args);
 
@@ -38,6 +41,8 @@ int grid_method(common::arguments &args) {
 		cout << "not support such input format!" << endl;
 		return 0;
 	}
+	// 最后输出的mesh
+	Mesh mesh_out;
 
 	Timer<> timer;
 	timer.beginStage("START MESH OPT");
@@ -52,9 +57,42 @@ int grid_method(common::arguments &args) {
 		string path_out;
 		path_out = path_without_suffix + ".mesh";
 		cout << "writing mesh to path_out: " << path_out << endl;
+		io.write_hybrid_mesh_MESH(mesh_out, path_out);
+		path_out = path_without_suffix + ".vtk";
+		cout << "writing mesh to path_out: " << path_out << endl;
+		io.write_hybrid_mesh_VTK(mesh_out, path_out);
 
+		path_out = path_without_suffix + "_subB.mesh";
+		cout << "writing mesh to path_out: " << path_out << endl;
+		io.write_hybrid_mesh_MESH(mesh_out, path_out);
+		path_out = path_without_suffix + "_subB.vtk";
+		cout << "writing mesh to path_out: " << path_out << endl;
+		io.write_hybrid_mesh_VTK(mesh_out, path_out);
 	} else {
+		string out_format;
+		suffix_idx = args.output.rfind('.');
+		out_format = args.output.substr(suffix_idx);
+		if (out_format == ".vtk" || out_format == ".VTK")
+			io.write_hybrid_mesh_VTK(mesh_out, args.output);
+		else if (out_format == ".mesh" || out_format == ".MESH") {
+			path_without_suffix = args.output.substr(0, suffix_idx);
+			string path_out;
+			path_out = path_without_suffix + ".mesh";
+			cout << "writing mesh to path_out: " << path_out << endl;
+			io.write_hybrid_mesh_MESH(mesh_out, path_out);
+			path_out = path_without_suffix + ".vtk";
+			cout << "writing mesh to path_out: " << path_out << endl;
+			io.write_hybrid_mesh_VTK(mesh_out, path_out);
 
+			path_out = path_without_suffix + "_subB.mesh";
+			cout << "writing mesh to path_out: " << path_out << endl;
+			io.write_hybrid_mesh_MESH(mesh_out, path_out);
+			path_out = path_without_suffix + "_subB.vtk";
+			cout << "writing mesh to path_out: " << path_out << endl;
+			io.write_hybrid_mesh_VTK(mesh_out, path_out);
+		} else {
+			return false;
+		}
 	}
 	return 1;
 }

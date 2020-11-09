@@ -2,10 +2,7 @@
 // Created by 徐溶延 on 2020/11/8.
 //
 
-#ifndef SLIM_MESH_OPTIMIZATION_GLOBAL_TYOES_H
-#define SLIM_MESH_OPTIMIZATION_GLOBAL_TYOES_H
-
-#endif //SLIM_MESH_OPTIMIZATION_GLOBAL_TYOES_H
+#pragma once
 
 #include <string>
 #include <ostream>
@@ -749,7 +746,7 @@ namespace common {
 	extern Feature_Graph Q_final_fg;
 	extern vector<vector<uint32_t>> GRAPH_MATCHES;
 
-	extern char path_out[300];
+	extern char path_out_[300];
 //parallel
 	extern int32_t GRAIN_SIZE;
 //meshes
