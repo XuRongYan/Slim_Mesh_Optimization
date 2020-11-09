@@ -1,5 +1,5 @@
-file(GLOB HEADERS *.h *.hpp)
-file(GLOB SOURCES *.cpp)
+file(GLOB HEADERS *.h *.hpp grid_meshing/*.h grid_meshing/*.hpp)
+file(GLOB SOURCES *.cpp grid_meshing/*.cpp)
 
 if (UNIX)
     add_library(alg SHARED ${SOURCES} ${HEADERS})
