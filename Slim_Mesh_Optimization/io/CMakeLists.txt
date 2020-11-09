@@ -12,4 +12,6 @@ endif ()
 target_link_libraries(io
         boost_program_options
         ${Boost_LIBRARIES}
+        ${LIBIGL_LIBRARIES}
+        ${LIBIGL_EXTRA_LIBRARIES}
         )

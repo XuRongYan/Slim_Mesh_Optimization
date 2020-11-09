@@ -40,8 +40,8 @@ int parse_config_file(const std::string &filename, common::arguments &args) {
 		return __LINE__;
 	}
 	args.choice = vm["choice"].as<std::string>();
-	args.input = DATA_SHARED_PATH "/" + vm["in"].as<std::string>();
-	args.output = DATA_SHARED_PATH "/" + vm["out"].as<std::string>();
+	args.input = DATA_SHARED_PATH "/objs/" + vm["in"].as<std::string>();
+	args.output = DATA_SHARED_PATH "/output/" + vm["out"].as<std::string>();
 	args.octree = vm["octree"].as<int>();
 	args.num_cell = vm["num_cell"].as<int>();
 	args.Hausdorff_ratio_t = vm["hausdorff"].as<double>();
@@ -54,8 +54,6 @@ int parse_config_file(const std::string &filename, common::arguments &args) {
 	args.Iteration_Base = vm["iteration_base"].as<int>();
 
 #ifndef NDEBUG
-
-#else
 	std::cout << args << std::endl;
 #endif
 

@@ -1,3 +1,0 @@
-C:/Users/15369/source/C++/Slim_Mesh_Optimization/Slim_Mesh_Optimization/out/build/x64-Debug (默认值)/CMakeFiles/Slim_Mesh_Optimization.dir
-C:/Users/15369/source/C++/Slim_Mesh_Optimization/Slim_Mesh_Optimization/out/build/x64-Debug (默认值)/CMakeFiles/edit_cache.dir
-C:/Users/15369/source/C++/Slim_Mesh_Optimization/Slim_Mesh_Optimization/out/build/x64-Debug (默认值)/CMakeFiles/rebuild_cache.dir

@@ -9,7 +9,7 @@ if (APPLE)
 endif ()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 if(MSVC)
     # Enable parallel compilation
@@ -94,6 +94,17 @@ else (Boost_FOUND)
     endif ()
 endif ()
 
+find_package(tbb)
+if (tbb_FOUND)
+    message("find tbb by find_package(), " PATH=${tbb_INCLUDE_DIRS})
+    include_directories(${tbb_INCLUDE_DIRS})
+    link_libraries(/usr/local/lib/libtbb.a)
+else(tbb_FOUND)
+    message("find tbb at /usr/local/include")
+    include_directories(/usr/local/include)
+    link_libraries(/usr/local/lib/libtbb.a)
+endif()
+
 # libigl options: choose between header only and compiled static library
 # Header-only is preferred for small projects. For larger projects the static build
 # considerably reduces the compilation times
@@ -126,7 +137,7 @@ endif()
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/external/libigl/shared/cmake" "libigl")
 
 # Build VCG
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/vcg extern_build/vcg)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/vcg external_build/vcg)
 set_property(TARGET vcg PROPERTY FOLDER "dependencies")
 
 # Prepare the build environment
@@ -136,7 +147,7 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/external/tbb/include
         # VCG
         ${CMAKE_CURRENT_SOURCE_DIR}/external/vcg
-        ${CMAKE_CURRENT_SOURCE_DIR}/external/geogram
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/geogram/src/lib
 )
 add_definitions(${LIBIGL_DEFINITIONS})
 add_definitions(-DENABLE_SERIALIZATION)
@@ -182,4 +193,5 @@ endif ()
 
 # TODO: 如有需要，请添加测试并安装目标。
 add_subdirectory(common)
+add_subdirectory(io)
 add_subdirectory(main)
