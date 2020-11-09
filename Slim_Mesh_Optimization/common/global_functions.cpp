@@ -2418,7 +2418,7 @@ bool scaled_jacobian(Mesh &hmi, Mesh_Quality &mq)
 	return true;
 }
 
-double a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Vector3d &v3)
+Float a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Vector3d &v3)
 {
 	Matrix3d Jacobian;
 	
@@ -2460,10 +2460,6 @@ double a_jacobian(VectorXd &v0, VectorXd &v1, VectorXd &v2, VectorXd &v3)
 	Jacobian.col(0) = v1 - v0;
 	Jacobian.col(1) = v2 - v0;
 	Jacobian.col(2) = v3 - v0;
-	//Jacobian.col(0) = v0 - v3;
-	//Jacobian.col(1) = v1 - v3;
-	//Jacobian.col(2) = v2 - v3;
-
 
 	double norm1 = Jacobian.col(0).norm();
 	double norm2 = Jacobian.col(1).norm();
@@ -2499,6 +2495,7 @@ double a_jacobian(VectorXd &v0, VectorXd &v1, VectorXd &v2)
 	scaled_jacobian /= norm1*norm2;
 	return scaled_jacobian;
 }
+
 //===================================feature v tags==========================================
 bool quad_mesh_feature(Mesh_Feature &mf) {
 	Mesh &mesh = mf.tri;

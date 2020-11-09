@@ -7,7 +7,9 @@ add_executable(slim_mesh_opt_exe ${source} ${header} ${SRCFILES})
 target_link_libraries(slim_mesh_opt_exe
         boost_program_options
         ${Boost_LIBRARIES}
+        common
         io
+        alg
         )
 
 target_compile_definitions(slim_mesh_opt_exe PUBLIC "-DDATA_SHARED_PATH=\"${DATA_SHARED_PATH}\"")

@@ -13,7 +13,7 @@ namespace common {
 	vector<vector<uint32_t>> GRAPH_MATCHES;
 
 
-	char path_out[300];
+	char path_out_[300];
 	int32_t GRAIN_SIZE;
 
 	double diagonal_len;
