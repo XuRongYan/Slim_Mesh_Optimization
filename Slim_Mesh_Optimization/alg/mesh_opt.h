@@ -24,8 +24,10 @@ class mesh_opt {
 public:
 	explicit mesh_opt(const arguments &args);
 
-private:
 	void hex_mesh_opt(const Mesh &hex_mesh_in, const Mesh &trimesh, Mesh &hex_mesh_out);
+
+private:
+
 
 	void build_aabb_tree(Mesh &tmi, Treestr &a_tree,bool is_tri = false);
 

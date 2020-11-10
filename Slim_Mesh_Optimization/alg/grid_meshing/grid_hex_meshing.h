@@ -1,8 +1,6 @@
 #pragma once
 #include "../../common/global_functions.h"
 #include "../../io/io.h"
-//#include "octree.h"
-//#include "common.h"
 #include "voxelization.h"
 #include <algorithm>
 //for signed distance
@@ -15,6 +13,8 @@
 #include <Eigen/Sparse>
 #include "igl/bounding_box_diagonal.h"
 #include "../metro_hausdorff.h"
+
+
 class grid_hex_meshing_bijective
 {
 	enum NV_type {
