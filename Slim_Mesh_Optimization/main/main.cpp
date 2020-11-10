@@ -8,6 +8,7 @@
 #include "parse_config_file.h"
 #include "../timer.h"
 #include "../io/io.h"
+#include "../alg/meshing.h"
 
 
 
@@ -41,6 +42,15 @@ int grid_method(common::arguments &args) {
 		cout << "not support such input format!" << endl;
 		return 0;
 	}
+
+	GEO::initialize();
+	int nprocess = -1;
+	tbb::task_scheduler_init init(nprocess == -1 ? tbb::task_scheduler_init::automatic : nprocess);
+	Eigen::initParallel();
+	int n = 1;
+	Eigen::setNbThreads(n);
+	meshing m;
+
 	// 最后输出的mesh
 	Mesh mesh_out;
 
@@ -49,10 +59,13 @@ int grid_method(common::arguments &args) {
 	cout << endl;
 
 	// TODO: Mesh Opt
+	if(!m.processing(path_without_suffix))
+		return false;
 
 	timer.endStage("END MESH OPT");
 	std::cout << "TIMING: " << timer.value() << "ms" << endl;
 
+	mesh_out = m.mesho;
 	if (args.output.empty()) {
 		string path_out;
 		path_out = path_without_suffix + ".mesh";

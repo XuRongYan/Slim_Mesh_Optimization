@@ -736,7 +736,6 @@ namespace common {
 			mf_quad.curve_es.clear();
 			mf_quad.circles.clear();
 		}
-
 	};
 
 	extern arguments args;

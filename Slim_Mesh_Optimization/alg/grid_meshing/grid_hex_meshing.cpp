@@ -93,7 +93,6 @@ void grid_hex_meshing_bijective::pipeline(string path) {
 	};
 
 	while (true) {
-		
 		vector<uint32_t> tb_subdivided_cells_;
 		for (uint32_t j = 0; j < local_refinement_ringN; j++) {
 			vector<int> nvs_;
@@ -451,12 +450,14 @@ void grid_hex_meshing_bijective::dual_octree_meshing(GEO::Mesh &mi, Mesh &mo) {
 		f_layers.push_back(a_layer);
 	}
 
-	Mesh pure_hex_mesh; pure_hex_mesh.type = Mesh_type::Hex;
+	Mesh pure_hex_mesh;
+	pure_hex_mesh.type = Mesh_type::Hex;
 	nv_TAG.clear();
 	connectivity_modification(hybrid_standard, h_type, nv_TAG, pure_hex_mesh);
 	mo = pure_hex_mesh;
 	build_connectivity(mo);
 }
+
 bool grid_hex_meshing_bijective::octree_mesh(GEO::Mesh &mi, Mesh &mo, OctreeGrid &octree,
 	Eigen::Vector3i &grid_size)
 {
@@ -2218,9 +2219,9 @@ bool grid_hex_meshing_bijective::surface_mapping(Mesh &tmi, Mesh_Domain &md)
  
  	Q_final_fg = md.Qfg;
 	GRAPH_MATCHES = md.graph_matches;
-
 	return true;
 }
+
 void grid_hex_meshing_bijective::break_circles(Mesh_Feature &mf_temp, vector<bool> &Corner_tag, vector<vector<uint32_t>> &circle2curve_map)
 {
 	mf_temp.corners = mf.corners;
@@ -2256,6 +2257,7 @@ void grid_hex_meshing_bijective::break_circles(Mesh_Feature &mf_temp, vector<boo
 		else circle2curve_map[i].push_back(i);
 	}
 }
+
 bool grid_hex_meshing_bijective::node_mapping(Mesh_Feature &mf_temp, Feature_Graph &Tfg, Mesh_Domain &md)
 {
 	auto &quad_tree = md.quad_tree;	
@@ -3908,7 +3910,6 @@ bool grid_hex_meshing_bijective::feature_alignment(Mesh_Domain &md) {
 		}
 		return false;
 	}
-
 	return true;
 }
 void grid_hex_meshing_bijective::dirty_local_feature_update(Mesh_Domain &md, std::vector<int> &Dirty_Vs) {
@@ -4326,6 +4327,7 @@ bool grid_hex_meshing_bijective::hausdorff_ratio_check(Mesh &m0, Mesh &m1, doubl
 	}
 	return true;
 }
+
 grid_hex_meshing_bijective::~grid_hex_meshing_bijective()
 {
 }
