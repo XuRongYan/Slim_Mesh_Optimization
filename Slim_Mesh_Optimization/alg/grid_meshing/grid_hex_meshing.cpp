@@ -2155,71 +2155,71 @@ void grid_hex_meshing_bijective::scaffold(Mesh_Domain &md)
 //boundary projection & feature capture
 bool grid_hex_meshing_bijective::surface_mapping(Mesh &tmi, Mesh_Domain &md) 
 {
-	Mesh_Feature mf_temp;
-	vector<bool> Corner_tag;
-	vector<vector<uint32_t>> circle2curve_map;
-	break_circles(mf_temp, Corner_tag, circle2curve_map);
-
-	//build surface feture graph
-	Feature_Graph Tfg;
-	
-	md.clear_Qfg();	
-	md.clear_mf_quad();
-	Mesh htri; 
-	htri.type = Mesh_type::Tri;
-	auto &hqua = md.quad_tree.mesh; 
-	hqua.type = Mesh_type::Qua;
-
-	extract_surface_conforming_mesh(md.mesh_subA, htri, md.TV_map, md.TV_map_reverse, md.TF_map, md.TF_map_reverse);
-	extract_surface_conforming_mesh(md.mesh_subA, hqua, md.QV_map, md.QV_map_reverse, md.QF_map, md.QF_map_reverse);
-	//aabb stree for surface of the hex-mesh
-	build_aabb_tree(htri, md.quad_tree);
-
-	cout << "node mapping" << endl;
-	if(!node_mapping(mf_temp,Tfg, md))
-		return false;
-	cout << "curve mapping" << endl;
-	curve_mapping(Tfg, md);
-	if(!reunion_circles(mf_temp,Corner_tag, circle2curve_map ,md))
-		return false;
-	cout << "patch mapping" << endl;
-	if(!patch_mapping(md))
-		return false;
-	patch_trees(md);
-	
-	fc.V_types.resize(md.mesh_entire.Vs.size()); 
-	fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
-
-	for (uint32_t i = 0; i < md.mf_quad.corners.size();i++) 
-		fc.V_types[md.mf_quad.corners[i]] = Feature_V_Type::CORNER;
-	for (uint32_t i = 0; i < md.mf_quad.curve_vs.size();i++)
-		for (auto vid : md.mf_quad.curve_vs[i]) 
-		{
-			if (fc.V_types[vid] == Feature_V_Type::CORNER || fc.V_types[vid] == Feature_V_Type::LINE)
-				continue;
-			fc.V_types[vid] = Feature_V_Type::LINE;
-		}
-	for (auto v:md.mesh_entire.Vs)
-		if (v.on_medial_surface && fc.V_types[v.id] == Feature_V_Type::INTERIOR)
-			fc.V_types[v.id] = Feature_V_Type::REGULAR;
-	
-	vector<bool> V_tag(md.mesh_entire.Vs.size(), false);
-	for (auto &R : md.Qfg.Rs) 
-	{
-		for (const auto & fid : R.tris)
-			for (const auto &vid : md.Qfg.mf.tri.Fs[fid].vs)
-			{
-				auto &rvid = md.V_map_reverse[md.QV_map_reverse[vid]];
-				if (!V_tag[rvid] && fc.V_types[rvid] == Feature_V_Type::REGULAR) {
-					R.vs.push_back(rvid);
-					V_tag[rvid] = true;
-				}
-			}
-	}
- 
- 	Q_final_fg = md.Qfg;
-	GRAPH_MATCHES = md.graph_matches;
-	return true;
+//	Mesh_Feature mf_temp;
+//	vector<bool> Corner_tag;
+//	vector<vector<uint32_t>> circle2curve_map;
+//	break_circles(mf_temp, Corner_tag, circle2curve_map);
+//
+//	//build surface feture graph
+//	Feature_Graph Tfg;
+//
+//	md.clear_Qfg();
+//	md.clear_mf_quad();
+//	Mesh htri;
+//	htri.type = Mesh_type::Tri;
+//	auto &hqua = md.quad_tree.mesh;
+//	hqua.type = Mesh_type::Qua;
+//
+//	extract_surface_conforming_mesh(md.mesh_subA, htri, md.TV_map, md.TV_map_reverse, md.TF_map, md.TF_map_reverse);
+//	extract_surface_conforming_mesh(md.mesh_subA, hqua, md.QV_map, md.QV_map_reverse, md.QF_map, md.QF_map_reverse);
+//	//aabb stree for surface of the hex-mesh
+//	build_aabb_tree(htri, md.quad_tree);
+//
+//	cout << "node mapping" << endl;
+//	if(!node_mapping(mf_temp,Tfg, md))
+//		return false;
+//	cout << "curve mapping" << endl;
+//	curve_mapping(Tfg, md);
+//	if(!reunion_circles(mf_temp,Corner_tag, circle2curve_map ,md))
+//		return false;
+//	cout << "patch mapping" << endl;
+//	if(!patch_mapping(md))
+//		return false;
+//	patch_trees(md);
+//
+//	fc.V_types.resize(md.mesh_entire.Vs.size());
+//	fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
+//
+//	for (uint32_t i = 0; i < md.mf_quad.corners.size();i++)
+//		fc.V_types[md.mf_quad.corners[i]] = Feature_V_Type::CORNER;
+//	for (uint32_t i = 0; i < md.mf_quad.curve_vs.size();i++)
+//		for (auto vid : md.mf_quad.curve_vs[i])
+//		{
+//			if (fc.V_types[vid] == Feature_V_Type::CORNER || fc.V_types[vid] == Feature_V_Type::LINE)
+//				continue;
+//			fc.V_types[vid] = Feature_V_Type::LINE;
+//		}
+//	for (auto v:md.mesh_entire.Vs)
+//		if (v.on_medial_surface && fc.V_types[v.id] == Feature_V_Type::INTERIOR)
+//			fc.V_types[v.id] = Feature_V_Type::REGULAR;
+//
+//	vector<bool> V_tag(md.mesh_entire.Vs.size(), false);
+//	for (auto &R : md.Qfg.Rs)
+//	{
+//		for (const auto & fid : R.tris)
+//			for (const auto &vid : md.Qfg.mf.tri.Fs[fid].vs)
+//			{
+//				auto &rvid = md.V_map_reverse[md.QV_map_reverse[vid]];
+//				if (!V_tag[rvid] && fc.V_types[rvid] == Feature_V_Type::REGULAR) {
+//					R.vs.push_back(rvid);
+//					V_tag[rvid] = true;
+//				}
+//			}
+//	}
+//
+// 	Q_final_fg = md.Qfg;
+//	GRAPH_MATCHES = md.graph_matches;
+//	return true;
 }
 
 void grid_hex_meshing_bijective::break_circles(Mesh_Feature &mf_temp, vector<bool> &Corner_tag, vector<vector<uint32_t>> &circle2curve_map)
@@ -2732,13 +2732,13 @@ bool grid_hex_meshing_bijective::reunion_circles(
 	}
 
 	//several curves share the same non-corner vertex
-	fc.V_types.resize(md.mesh_subA.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
-	for (auto c: Qfg.Cs) fc.V_types[QV_map_reverse[c.vs[0]]] = Feature_V_Type::CORNER;
-	for (auto l : Qfg.Ls) for (auto vid : l.vs) if(fc.V_types[vid] != Feature_V_Type::INTERIOR && fc.V_types[vid] != Feature_V_Type::CORNER){
-		auto g_id = md.V_map_reverse[QV_map_reverse[vid]];
-		tb_subdivided_cells.push_back(g_id);
-		fc.V_types[QV_map_reverse[vid]] = Feature_V_Type::LINE;
-	}
+//	fc.V_types.resize(md.mesh_subA.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
+//	for (auto c: Qfg.Cs) fc.V_types[QV_map_reverse[c.vs[0]]] = Feature_V_Type::CORNER;
+//	for (auto l : Qfg.Ls) for (auto vid : l.vs) if(fc.V_types[vid] != Feature_V_Type::INTERIOR && fc.V_types[vid] != Feature_V_Type::CORNER){
+//		auto g_id = md.V_map_reverse[QV_map_reverse[vid]];
+//		tb_subdivided_cells.push_back(g_id);
+//		fc.V_types[QV_map_reverse[vid]] = Feature_V_Type::LINE;
+//	}
 
 	if (tb_subdivided_cells.size())return false;
 
@@ -2752,7 +2752,7 @@ bool grid_hex_meshing_bijective::reunion_circles(
 }
 bool grid_hex_meshing_bijective::patch_mapping(Mesh_Domain &md)
 {
-	auto &Qfg = md.Qfg;	
+	auto &Qfg = md.Qfg;
 	auto &Qfg_sur =md.Qfg_sur;
 	auto &graph_matches = md.graph_matches;
 	//matching graph fg & Qfg!
@@ -2785,7 +2785,7 @@ bool grid_hex_meshing_bijective::patch_mapping(Mesh_Domain &md)
 	}
 
 	cout << "start to find bad lines!" << endl;
-	//kill miss match because of shared edges! 
+	//kill miss match because of shared edges!
 	vector<uint32_t> lines, regions;
 	for (auto r : Qfg.Rs) {
 		if (graph_matches[r.id].size())continue;
@@ -2799,7 +2799,7 @@ bool grid_hex_meshing_bijective::patch_mapping(Mesh_Domain &md)
 	vector<bool> r_flag(fg.Rs.size(), false);
 	for (auto m : graph_matches) for (auto rid : m)r_flag[rid] = true;
 
-	vector<uint32_t> tlines, tregions; 
+	vector<uint32_t> tlines, tregions;
 	for (auto r : fg.Rs)if (!r_flag[r.id]) {
 		tlines.insert(tlines.end(), r.ls.begin(), r.ls.end());
 		tregions.push_back(r.id);
@@ -2897,25 +2897,25 @@ bool grid_hex_meshing_bijective::deformation(Mesh_Domain &md) {
 		}
 	}
 	//smooth feature only
-	fc = Feature_Constraints();
-	fc.V_types.resize(m.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
-	fc.V_ids.resize(m.Vs.size());
-	fc.RV_type.resize(m.Vs.size());
-	fill(fc.RV_type.begin(), fc.RV_type.end(), true);
-
-	int num_corners = 0, num_lines = 0, num_regulars = 0;
-	for (auto v : m.Vs) {
-		auto i = v.id;
-		if (v.on_medial_surface && fc.V_types[i] == Feature_V_Type::INTERIOR) {
-			fc.V_types[i] = Feature_V_Type::REGULAR;
-			num_regulars++;
-		}
-	}
-	fc.ids_C.resize(num_corners); fc.C.resize(num_corners, 3);
-	fc.num_a = num_lines; fc.ids_L.resize(num_lines); fc.Axa_L.resize(num_lines, 3); fc.origin_L.resize(num_lines, 3);
-	fc.ids_T.resize(num_regulars); fc.normal_T.resize(num_regulars, 3); fc.dis_T.resize(num_regulars); fc.V_T.resize(num_regulars, 3);
-	fc.lamda_C = fc.lamda_L = 0;
-	fc.lamda_T = LAMDA_FEATURE_PROJECTION;
+//	fc = Feature_Constraints();
+//	fc.V_types.resize(m.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
+//	fc.V_ids.resize(m.Vs.size());
+//	fc.RV_type.resize(m.Vs.size());
+//	fill(fc.RV_type.begin(), fc.RV_type.end(), true);
+//
+//	int num_corners = 0, num_lines = 0, num_regulars = 0;
+//	for (auto v : m.Vs) {
+//		auto i = v.id;
+//		if (v.on_medial_surface && fc.V_types[i] == Feature_V_Type::INTERIOR) {
+//			fc.V_types[i] = Feature_V_Type::REGULAR;
+//			num_regulars++;
+//		}
+//	}
+//	fc.ids_C.resize(num_corners); fc.C.resize(num_corners, 3);
+//	fc.num_a = num_lines; fc.ids_L.resize(num_lines); fc.Axa_L.resize(num_lines, 3); fc.origin_L.resize(num_lines, 3);
+//	fc.ids_T.resize(num_regulars); fc.normal_T.resize(num_regulars, 3); fc.dis_T.resize(num_regulars); fc.V_T.resize(num_regulars, 3);
+//	fc.lamda_C = fc.lamda_L = 0;
+//	fc.lamda_T = LAMDA_FEATURE_PROJECTION;
 
 	ts.energy_type = SYMMETRIC_DIRICHLET;
 	ts.UV = ts.V;
@@ -2957,7 +2957,7 @@ bool grid_hex_meshing_bijective::deformation(Mesh_Domain &md) {
 		m.V = ts.UV.transpose();
 		ts.V = ts.UV;
 		
-		fc.lamda_T = std::min(LAMDA_FEATURE_PROJECTION * std::max(opt.engery_quality/opt.engery_soft * fc.lamda_T, 1.0), LAMDA_FEATURE_PROJECTION_BOUND);
+		//fc.lamda_T = std::min(LAMDA_FEATURE_PROJECTION * std::max(opt.engery_quality/opt.engery_soft * fc.lamda_T, 1.0), LAMDA_FEATURE_PROJECTION_BOUND);
 	}
 
 	for (auto &v : m.Vs) {
@@ -3001,11 +3001,11 @@ bool grid_hex_meshing_bijective::smoothing(Mesh_Domain &md) {
 	}
 	//smooth feature only
 	fc = Feature_Constraints();
-	fc.V_types.resize(m.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
-	fc.V_ids.resize(m.Vs.size());
-	fc.RV_type.resize(m.Vs.size());
-	fill(fc.RV_type.begin(), fc.RV_type.end(), true);
-	fc.lamda_C = fc.lamda_L = fc.lamda_T = 0;
+//	fc.V_types.resize(m.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
+//	fc.V_ids.resize(m.Vs.size());
+//	fc.RV_type.resize(m.Vs.size());
+//	fill(fc.RV_type.begin(), fc.RV_type.end(), true);
+//	fc.lamda_C = fc.lamda_L = fc.lamda_T = 0;
 
 	ts.energy_type = SYMMETRIC_DIRICHLET;
 	ts.UV = ts.V;
@@ -3762,25 +3762,25 @@ void grid_hex_meshing_bijective::dirty_region_identification(Mesh_Domain &md, st
 }
 void grid_hex_meshing_bijective::projection_smooth(const Mesh &hmi, Feature_Constraints &fc) {
 
-	MatrixXd Ps(fc.ids_T.size(), 3);
-	int num_regulars_ = 0;
-	for (int i = 0; i<fc.V_types.size(); i++)
-		if (fc.V_types[i] == Feature_V_Type::REGULAR) { fc.ids_T(num_regulars_) = i; Ps.row(num_regulars_++) = hmi.V.col(i).transpose(); }
-
-	for (int i = 0; i < fc.ids_T.size(); i++) { Ps.row(i) = hmi.V.col(fc.ids_T[i]).transpose(); }
-
-	VectorXd signed_dis;
-	VectorXi ids;
-	MatrixXd V_T(fc.ids_T.size(), 3), normal_T(fc.ids_T.size(), 3);
-	signed_distance_pseudonormal(Ps, tri_tree.TriV, tri_tree.TriF, tri_tree.tree, tri_tree.TriFN, tri_tree.TriVN, tri_tree.TriEN,
-		tri_tree.TriEMAP, signed_dis, ids, V_T, normal_T);
-
-	for (uint32_t j = 0; j < fc.ids_T.size(); j++) {
-		fc.normal_T.row(j) = normal_T.row(j);
-		fc.V_T.row(j) = V_T.row(j);
-		fc.dis_T[j] = normal_T.row(j).dot(V_T.row(j));
-		fc.V_ids[fc.ids_T[j]] = -1;
-	}
+//	MatrixXd Ps(fc.ids_T.size(), 3);
+//	int num_regulars_ = 0;
+//	for (int i = 0; i<fc.V_types.size(); i++)
+//		if (fc.V_types[i] == Feature_V_Type::REGULAR) { fc.ids_T(num_regulars_) = i; Ps.row(num_regulars_++) = hmi.V.col(i).transpose(); }
+//
+//	for (int i = 0; i < fc.ids_T.size(); i++) { Ps.row(i) = hmi.V.col(fc.ids_T[i]).transpose(); }
+//
+//	VectorXd signed_dis;
+//	VectorXi ids;
+//	MatrixXd V_T(fc.ids_T.size(), 3), normal_T(fc.ids_T.size(), 3);
+//	signed_distance_pseudonormal(Ps, tri_tree.TriV, tri_tree.TriF, tri_tree.tree, tri_tree.TriFN, tri_tree.TriVN, tri_tree.TriEN,
+//		tri_tree.TriEMAP, signed_dis, ids, V_T, normal_T);
+//
+//	for (uint32_t j = 0; j < fc.ids_T.size(); j++) {
+//		fc.normal_T.row(j) = normal_T.row(j);
+//		fc.V_T.row(j) = V_T.row(j);
+//		fc.dis_T[j] = normal_T.row(j).dot(V_T.row(j));
+//		fc.V_ids[fc.ids_T[j]] = -1;
+//	}
 }
 
 bool grid_hex_meshing_bijective::feature_alignment(Mesh_Domain &md) {
@@ -3812,7 +3812,7 @@ bool grid_hex_meshing_bijective::feature_alignment(Mesh_Domain &md) {
 	ts.lamda_b = MESHRATIO *1e+3;
 	ts.regionb.resize(0); ts.regionbc.resize(0, 3); ts.regionbc.setZero();
 	ts.lamda_region = 0;
-	fc.lamda_C = fc.lamda_L = fc.lamda_T = LAMDA_FEATURE_PROJECTION;
+	//fc.lamda_C = fc.lamda_L = fc.lamda_T = LAMDA_FEATURE_PROJECTION;
 
 	ts.energy_type = SYMMETRIC_DIRICHLET;
 	ts.UV = ts.V;
@@ -3865,11 +3865,11 @@ bool grid_hex_meshing_bijective::feature_alignment(Mesh_Domain &md) {
 		m.V = ts.UV.transpose();
 		ts.V = ts.UV;
 
-		if (!Max_dis_satisified)
-		{
-			std::cout<< "energy_quality "<<opt.engery_quality<<"; soft: "<<opt.engery_soft<< " lamda_c "<< fc.lamda_C<<std::endl;
-			fc.lamda_T = fc.lamda_L = fc.lamda_C = std::min(LAMDA_FEATURE_PROJECTION * std::max(opt.engery_quality/opt.engery_soft * fc.lamda_C, 1.0), LAMDA_FEATURE_PROJECTION_BOUND);
-		}
+//		if (!Max_dis_satisified)
+//		{
+//			std::cout<< "energy_quality "<<opt.engery_quality<<"; soft: "<<opt.engery_soft<< " lamda_c "<< fc.lamda_C<<std::endl;
+//			fc.lamda_T = fc.lamda_L = fc.lamda_C = std::min(LAMDA_FEATURE_PROJECTION * std::max(opt.engery_quality/opt.engery_soft * fc.lamda_C, 1.0), LAMDA_FEATURE_PROJECTION_BOUND);
+//		}
 
 		if(i<=1)
 			energy_pre = opt.energy;
@@ -3913,174 +3913,174 @@ bool grid_hex_meshing_bijective::feature_alignment(Mesh_Domain &md) {
 	return true;
 }
 void grid_hex_meshing_bijective::dirty_local_feature_update(Mesh_Domain &md, std::vector<int> &Dirty_Vs) {
-	auto &hmi = md.mesh_entire;
-	auto &mf_quad = md.mf_quad;
-
-	fc.V_types.resize(hmi.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
-	fc.V_ids.resize(hmi.Vs.size());
-	fc.RV_type.resize(hmi.Vs.size());
-	fill(fc.RV_type.begin(), fc.RV_type.end(), true);
-	//matrices
-
-	for (uint32_t i = 0; i < mf_quad.corners.size(); i++) {
-		fc.V_types[mf_quad.corners[i]] = Feature_V_Type::CORNER;
-		fc.V_ids[mf_quad.corners[i]] = mf.corners[i];
-	}
-	for (uint32_t i = 0; i < mf_quad.curve_vs.size(); i++)for (auto vid : mf_quad.curve_vs[i]) {
-		if (fc.V_types[vid] == Feature_V_Type::CORNER)continue;
-		fc.V_types[vid] = Feature_V_Type::LINE;
-		fc.V_ids[vid] = i;
-	}
-	for (auto v : hmi.Vs) {
-		auto i = v.id;
-		if (v.on_medial_surface && fc.V_types[i] == Feature_V_Type::INTERIOR) {
-			fc.V_types[i] = Feature_V_Type::REGULAR;
-		}
-	}
-
-	for (const auto &v : Dirty_Vs) {
-		fc.V_types[v] = Feature_V_Type::REGULAR;
-	}
-
-	uint32_t num_corners = 0, num_lines = 0, num_regulars = 0;
-	for (const auto &type : fc.V_types)
-		if (type == Feature_V_Type::CORNER)num_corners++;
-		else if (type == Feature_V_Type::LINE)num_lines++;
-		else if (type == Feature_V_Type::REGULAR)num_regulars++;
-
-		fc.ids_C.resize(num_corners); fc.C.resize(num_corners, 3);
-		fc.num_a = num_lines; fc.ids_L.resize(num_lines); fc.Axa_L.resize(num_lines, 3); fc.origin_L.resize(num_lines, 3);
-		fc.ids_T.resize(num_regulars); fc.normal_T.resize(num_regulars, 3); fc.dis_T.resize(num_regulars); fc.V_T.resize(num_regulars, 3);
-		num_corners = num_lines = num_regulars = 0;
+//	auto &hmi = md.mesh_entire;
+//	auto &mf_quad = md.mf_quad;
+//
+//	fc.V_types.resize(hmi.Vs.size()); fill(fc.V_types.begin(), fc.V_types.end(), Feature_V_Type::INTERIOR);
+//	fc.V_ids.resize(hmi.Vs.size());
+//	fc.RV_type.resize(hmi.Vs.size());
+//	fill(fc.RV_type.begin(), fc.RV_type.end(), true);
+//	//matrices
+//
+//	for (uint32_t i = 0; i < mf_quad.corners.size(); i++) {
+//		fc.V_types[mf_quad.corners[i]] = Feature_V_Type::CORNER;
+//		fc.V_ids[mf_quad.corners[i]] = mf.corners[i];
+//	}
+//	for (uint32_t i = 0; i < mf_quad.curve_vs.size(); i++)for (auto vid : mf_quad.curve_vs[i]) {
+//		if (fc.V_types[vid] == Feature_V_Type::CORNER)continue;
+//		fc.V_types[vid] = Feature_V_Type::LINE;
+//		fc.V_ids[vid] = i;
+//	}
+//	for (auto v : hmi.Vs) {
+//		auto i = v.id;
+//		if (v.on_medial_surface && fc.V_types[i] == Feature_V_Type::INTERIOR) {
+//			fc.V_types[i] = Feature_V_Type::REGULAR;
+//		}
+//	}
+//
+//	for (const auto &v : Dirty_Vs) {
+//		fc.V_types[v] = Feature_V_Type::REGULAR;
+//	}
+//
+//	uint32_t num_corners = 0, num_lines = 0, num_regulars = 0;
+//	for (const auto &type : fc.V_types)
+//		if (type == Feature_V_Type::CORNER)num_corners++;
+//		else if (type == Feature_V_Type::LINE)num_lines++;
+//		else if (type == Feature_V_Type::REGULAR)num_regulars++;
+//
+//		fc.ids_C.resize(num_corners); fc.C.resize(num_corners, 3);
+//		fc.num_a = num_lines; fc.ids_L.resize(num_lines); fc.Axa_L.resize(num_lines, 3); fc.origin_L.resize(num_lines, 3);
+//		fc.ids_T.resize(num_regulars); fc.normal_T.resize(num_regulars, 3); fc.dis_T.resize(num_regulars); fc.V_T.resize(num_regulars, 3);
+//		num_corners = num_lines = num_regulars = 0;
 }
 void grid_hex_meshing_bijective::dirty_graph_projection(Mesh_Domain &md, Feature_Constraints &fc, std::vector<int> &Dirty_Vs) {
 
-	auto &Qfg = md.Qfg;
-	auto &hmi = md.mesh_entire;
-	auto &tri_Trees = md.tri_Trees;
-
-	uint32_t num_corners = 0, num_lines = 0, num_regulars = 0;
-	for (uint32_t i = 0; i < fc.V_types.size(); i++) {
-		if (fc.V_types[i] == Feature_V_Type::CORNER) {
-			fc.ids_C[num_corners] = i;
-			fc.C.row(num_corners) = mf.tri.V.col(fc.V_ids[i]);
-			num_corners++;
-		}
-		else if (fc.V_types[i] == Feature_V_Type::LINE) {
-			Vector3d v = hmi.V.col(i).transpose();
-			uint32_t curve_id = fc.V_ids[i];
-			vector<uint32_t> &curve = mf.curve_vs[curve_id];
-			Vector3d tangent(1, 0, 0);
-			uint32_t curve_len = curve.size();
-
-			if (!mf.circles[curve_id]) curve_len--;
-
-			vector<Vector3d> pvs, tangents;
-			vector<pair<double, uint32_t>> dis_ids;
-			Vector3d pv;
-			for (uint32_t j = 0; j < curve_len; j++) {
-				uint32_t pos_0 = curve[j], pos_1 = curve[(j + 1) % curve.size()];
-				double t, precision_here = 1.0e1;
-				point_line_projection(mf.tri.V.col(pos_0), mf.tri.V.col(pos_1), v, pv, t);
-				tangent = (mf.tri.V.col(pos_1) - mf.tri.V.col(pos_0)).normalized();
-				dis_ids.push_back(make_pair((v - pv).norm(), pvs.size()));
-				pvs.push_back(pv);
-				tangents.push_back(tangent);
-			}
-			sort(dis_ids.begin(), dis_ids.end());
-
-			if (dis_ids.size()) {
-				uint32_t cloestid = dis_ids[0].second;
-				pv = pvs[cloestid];
-				tangent = tangents[cloestid];
-			}
-			else {
-				//brute-force search
-				for (uint32_t j = 0; j < curve.size(); j++) {
-					double dis = (mf.tri.V.col(curve[j]) - v).norm();
-					dis_ids.push_back(make_pair(dis, j));
-				}
-				sort(dis_ids.begin(), dis_ids.end());
-
-				int pos = dis_ids[0].second;
-				pv = mf.tri.V.col(curve[pos]);
-
-				curve_len = curve.size();
-				if (mf.circles[curve_id] || (!mf.circles[curve_id] && pos != 0 && pos != curve_len - 1)) {
-					uint32_t pos_0 = (pos - 1 + curve_len) % curve_len, pos_1 = (pos + 1) % curve_len;
-					tangent += (mf.tri.V.col(curve[pos]) - mf.tri.V.col(curve[pos_0])).normalized();
-					tangent += (mf.tri.V.col(curve[pos_1]) - mf.tri.V.col(curve[pos])).normalized();
-				}
-				else if (!mf.circles[curve_id] && pos == 0) {
-					uint32_t pos_1 = (pos + 1) % curve_len;
-					tangent += (mf.tri.V.col(curve[pos_1]) - mf.tri.V.col(curve[pos])).normalized();
-				}
-				else if (!mf.circles[curve_id] && pos == curve_len - 1) {
-					uint32_t pos_0 = (pos - 1 + curve_len) % curve_len;
-					tangent += (mf.tri.V.col(curve[pos]) - mf.tri.V.col(curve[pos_0])).normalized();
-				}
-				tangent.normalize();
-			}
-			fc.ids_L[num_lines] = i;
-			fc.origin_L.row(num_lines) = pv;
-			fc.Axa_L.row(num_lines) = tangent;
-			num_lines++;
-		}
-	}
-	//cout << "graph_projection patch projection" << endl;
-	vector<bool> V_flag(hmi.Vs.size(), false);
-	num_regulars = 0;
-
-	for (const auto &vid : Dirty_Vs) V_flag[vid] = true;
-	std::cout<<"dirty_vs size: "<<Dirty_Vs.size()<<std::endl;
-	if (Dirty_Vs.size()) {
-		MatrixXd Ps(Dirty_Vs.size(), 3);
-		int num_regulars_ = 0;
-		for (const auto &vid : Dirty_Vs) { fc.ids_T(num_regulars + num_regulars_) = vid; Ps.row(num_regulars_++) = hmi.V.col(vid).transpose(); }
-
-		VectorXd signed_dis;
-		VectorXi ids;
-		MatrixXd V_T(Dirty_Vs.size(), 3), normal_T(Dirty_Vs.size(), 3);
-		signed_distance_pseudonormal(Ps, tri_tree.TriV, tri_tree.TriF, tri_tree.tree, tri_tree.TriFN, tri_tree.TriVN, tri_tree.TriEN,
-			tri_tree.TriEMAP, signed_dis, ids, V_T, normal_T);
-
-		for (uint32_t j = 0; j < Dirty_Vs.size(); j++) {
-			fc.normal_T.row(num_regulars + j) = normal_T.row(j);
-			fc.V_T.row(num_regulars + j) = V_T.row(j);
-			fc.dis_T[num_regulars + j] = normal_T.row(j).dot(V_T.row(j));
-			fc.V_ids[Dirty_Vs[j]] = -1;
-		}
-
-		num_regulars = Dirty_Vs.size();
-	}
-
-	for (uint32_t i = 0; i < Qfg.Rs.size(); i++) {
-		auto &R = Qfg.Rs[i];
-		vector<int> vs;
-		for (const auto &vid : R.vs)if (!V_flag[vid]) vs.push_back(vid);
-
-		if (!vs.size()) {
-			continue;
-		}
-
-		MatrixXd Ps(vs.size(), 3);
-		int num_regulars_ = 0;
-		for (auto vid : vs) { fc.ids_T(num_regulars + num_regulars_) = vid; Ps.row(num_regulars_++) = hmi.V.col(vid).transpose(); }
-
-		VectorXd signed_dis;
-		VectorXi ids;
-		MatrixXd V_T(vs.size(), 3), normal_T(vs.size(), 3);
-		signed_distance_pseudonormal(Ps, tri_Trees[i].TriV, tri_Trees[i].TriF, tri_Trees[i].tree, tri_Trees[i].TriFN, tri_Trees[i].TriVN, tri_Trees[i].TriEN,
-			tri_Trees[i].TriEMAP, signed_dis, ids, V_T, normal_T);
-
-		for (uint32_t j = 0; j < vs.size(); j++) {
-			fc.normal_T.row(num_regulars + j) = normal_T.row(j);
-			fc.V_T.row(num_regulars + j) = V_T.row(j);
-			fc.dis_T[num_regulars + j] = normal_T.row(j).dot(V_T.row(j));
-			fc.V_ids[vs[j]] = -1;
-		}
-		num_regulars += vs.size();
-	}
+//	auto &Qfg = md.Qfg;
+//	auto &hmi = md.mesh_entire;
+//	auto &tri_Trees = md.tri_Trees;
+//
+//	uint32_t num_corners = 0, num_lines = 0, num_regulars = 0;
+//	for (uint32_t i = 0; i < fc.V_types.size(); i++) {
+//		if (fc.V_types[i] == Feature_V_Type::CORNER) {
+//			fc.ids_C[num_corners] = i;
+//			fc.C.row(num_corners) = mf.tri.V.col(fc.V_ids[i]);
+//			num_corners++;
+//		}
+//		else if (fc.V_types[i] == Feature_V_Type::LINE) {
+//			Vector3d v = hmi.V.col(i).transpose();
+//			uint32_t curve_id = fc.V_ids[i];
+//			vector<uint32_t> &curve = mf.curve_vs[curve_id];
+//			Vector3d tangent(1, 0, 0);
+//			uint32_t curve_len = curve.size();
+//
+//			if (!mf.circles[curve_id]) curve_len--;
+//
+//			vector<Vector3d> pvs, tangents;
+//			vector<pair<double, uint32_t>> dis_ids;
+//			Vector3d pv;
+//			for (uint32_t j = 0; j < curve_len; j++) {
+//				uint32_t pos_0 = curve[j], pos_1 = curve[(j + 1) % curve.size()];
+//				double t, precision_here = 1.0e1;
+//				point_line_projection(mf.tri.V.col(pos_0), mf.tri.V.col(pos_1), v, pv, t);
+//				tangent = (mf.tri.V.col(pos_1) - mf.tri.V.col(pos_0)).normalized();
+//				dis_ids.push_back(make_pair((v - pv).norm(), pvs.size()));
+//				pvs.push_back(pv);
+//				tangents.push_back(tangent);
+//			}
+//			sort(dis_ids.begin(), dis_ids.end());
+//
+//			if (dis_ids.size()) {
+//				uint32_t cloestid = dis_ids[0].second;
+//				pv = pvs[cloestid];
+//				tangent = tangents[cloestid];
+//			}
+//			else {
+//				//brute-force search
+//				for (uint32_t j = 0; j < curve.size(); j++) {
+//					double dis = (mf.tri.V.col(curve[j]) - v).norm();
+//					dis_ids.push_back(make_pair(dis, j));
+//				}
+//				sort(dis_ids.begin(), dis_ids.end());
+//
+//				int pos = dis_ids[0].second;
+//				pv = mf.tri.V.col(curve[pos]);
+//
+//				curve_len = curve.size();
+//				if (mf.circles[curve_id] || (!mf.circles[curve_id] && pos != 0 && pos != curve_len - 1)) {
+//					uint32_t pos_0 = (pos - 1 + curve_len) % curve_len, pos_1 = (pos + 1) % curve_len;
+//					tangent += (mf.tri.V.col(curve[pos]) - mf.tri.V.col(curve[pos_0])).normalized();
+//					tangent += (mf.tri.V.col(curve[pos_1]) - mf.tri.V.col(curve[pos])).normalized();
+//				}
+//				else if (!mf.circles[curve_id] && pos == 0) {
+//					uint32_t pos_1 = (pos + 1) % curve_len;
+//					tangent += (mf.tri.V.col(curve[pos_1]) - mf.tri.V.col(curve[pos])).normalized();
+//				}
+//				else if (!mf.circles[curve_id] && pos == curve_len - 1) {
+//					uint32_t pos_0 = (pos - 1 + curve_len) % curve_len;
+//					tangent += (mf.tri.V.col(curve[pos]) - mf.tri.V.col(curve[pos_0])).normalized();
+//				}
+//				tangent.normalize();
+//			}
+//			fc.ids_L[num_lines] = i;
+//			fc.origin_L.row(num_lines) = pv;
+//			fc.Axa_L.row(num_lines) = tangent;
+//			num_lines++;
+//		}
+//	}
+//	//cout << "graph_projection patch projection" << endl;
+//	vector<bool> V_flag(hmi.Vs.size(), false);
+//	num_regulars = 0;
+//
+//	for (const auto &vid : Dirty_Vs) V_flag[vid] = true;
+//	std::cout<<"dirty_vs size: "<<Dirty_Vs.size()<<std::endl;
+//	if (Dirty_Vs.size()) {
+//		MatrixXd Ps(Dirty_Vs.size(), 3);
+//		int num_regulars_ = 0;
+//		for (const auto &vid : Dirty_Vs) { fc.ids_T(num_regulars + num_regulars_) = vid; Ps.row(num_regulars_++) = hmi.V.col(vid).transpose(); }
+//
+//		VectorXd signed_dis;
+//		VectorXi ids;
+//		MatrixXd V_T(Dirty_Vs.size(), 3), normal_T(Dirty_Vs.size(), 3);
+//		signed_distance_pseudonormal(Ps, tri_tree.TriV, tri_tree.TriF, tri_tree.tree, tri_tree.TriFN, tri_tree.TriVN, tri_tree.TriEN,
+//			tri_tree.TriEMAP, signed_dis, ids, V_T, normal_T);
+//
+//		for (uint32_t j = 0; j < Dirty_Vs.size(); j++) {
+//			fc.normal_T.row(num_regulars + j) = normal_T.row(j);
+//			fc.V_T.row(num_regulars + j) = V_T.row(j);
+//			fc.dis_T[num_regulars + j] = normal_T.row(j).dot(V_T.row(j));
+//			fc.V_ids[Dirty_Vs[j]] = -1;
+//		}
+//
+//		num_regulars = Dirty_Vs.size();
+//	}
+//
+//	for (uint32_t i = 0; i < Qfg.Rs.size(); i++) {
+//		auto &R = Qfg.Rs[i];
+//		vector<int> vs;
+//		for (const auto &vid : R.vs)if (!V_flag[vid]) vs.push_back(vid);
+//
+//		if (!vs.size()) {
+//			continue;
+//		}
+//
+//		MatrixXd Ps(vs.size(), 3);
+//		int num_regulars_ = 0;
+//		for (auto vid : vs) { fc.ids_T(num_regulars + num_regulars_) = vid; Ps.row(num_regulars_++) = hmi.V.col(vid).transpose(); }
+//
+//		VectorXd signed_dis;
+//		VectorXi ids;
+//		MatrixXd V_T(vs.size(), 3), normal_T(vs.size(), 3);
+//		signed_distance_pseudonormal(Ps, tri_Trees[i].TriV, tri_Trees[i].TriF, tri_Trees[i].tree, tri_Trees[i].TriFN, tri_Trees[i].TriVN, tri_Trees[i].TriEN,
+//			tri_Trees[i].TriEMAP, signed_dis, ids, V_T, normal_T);
+//
+//		for (uint32_t j = 0; j < vs.size(); j++) {
+//			fc.normal_T.row(num_regulars + j) = normal_T.row(j);
+//			fc.V_T.row(num_regulars + j) = V_T.row(j);
+//			fc.dis_T[num_regulars + j] = normal_T.row(j).dot(V_T.row(j));
+//			fc.V_ids[vs[j]] = -1;
+//		}
+//		num_regulars += vs.size();
+//	}
 }
 void grid_hex_meshing_bijective::tet_assembling(const Mesh &m, const vector<Hybrid> &Hs_copies, const vector<bool> &H_flag, const vector<bool> &Huntangle_flag, bool local) {
 	vector<Hybrid> hs = m.Hs;

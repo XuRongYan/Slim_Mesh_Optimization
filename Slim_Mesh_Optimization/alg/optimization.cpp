@@ -880,6 +880,7 @@ bool optimization::glueInternalNodesTriangles() {
 }
 
 
+
 void optimization::slim_m_opt(Tetralize_Set &ts, const uint32_t iter, const int type, bool verbose) {
 	SLIMData sData;
 
@@ -889,6 +890,10 @@ void optimization::slim_m_opt(Tetralize_Set &ts, const uint32_t iter, const int 
 	sData.soft_const_p = 1e1;
 	sData.exp_factor = 5.0;
 	sData.weight_opt = weight_opt;
+	sData.b = ts.b;
+	sData.mesh_type = ts.mesh_type;
+	sData.bc = ts.bc;
+
 	slim_precompute(ts.V, ts.T, ts.UV, sData, ts.energy_type, ts);
 	
 	slim_solve2(sData, iter, type, verbose);
@@ -898,6 +903,29 @@ void optimization::slim_m_opt(Tetralize_Set &ts, const uint32_t iter, const int 
 	engery_quality = sData.engery_quality;
 	engery_soft = sData.engery_soft;
 }
+
+void optimization::slim_m_opt_igl(Tetralize_Set &ts, const uint32_t iter, const int type, bool verbose) {
+	SLIMData sData;
+
+	Timer<> timer;
+	//timer.beginStage("prefactoring ");
+	sData.stop_threshold = 1.e-7;
+	sData.soft_const_p = 1e1;
+	sData.exp_factor = 5.0;
+	sData.weight_opt = weight_opt;
+	sData.b = ts.b;
+	sData.bc = ts.bc;
+
+	slim_precompute(ts.V, ts.T, ts.UV, sData, ts.energy_type, ts);
+
+	slim_solve2(sData, iter, type, verbose);
+
+	ts.UV = sData.V_o;
+	energy = sData.energy;
+	engery_quality = sData.engery_quality;
+	engery_soft = sData.engery_soft;
+}
+
 void optimization::scaff_slim_m_opt(Tetralize_Set &ts, const uint32_t iter, Mesh_Domain &md, const int type) {
 	SLIMData sData;
 
@@ -906,6 +934,7 @@ void optimization::scaff_slim_m_opt(Tetralize_Set &ts, const uint32_t iter, Mesh
 	sData.stop_threshold = 1.e-7;
 	sData.soft_const_p = 1e1;
 	sData.exp_factor = 5.0;
+
 	slim_precompute(ts.V, ts.T, ts.UV, sData, ts.energy_type, ts);
 
 	for (int i = 0; i < md.H_flag.size(); i++)
@@ -973,9 +1002,9 @@ void optimization::slim_opt_igl(Tetralize_Set &ts, const uint32_t iter) {
 	sData.weight_opt = weight_opt;
 	sData.soft_const_p = ts.lamda_b;//lamda_b not adapted for simplification pipeline yet
 	sData.exp_factor = 5.0;
-	sData.lamda_C = ts.fc.lamda_C;
-	sData.lamda_T = ts.fc.lamda_T;
-	sData.lamda_L = ts.fc.lamda_L;
+//	sData.lamda_C = ts.fc.lamda_C;
+//	sData.lamda_T = ts.fc.lamda_T;
+//	sData.lamda_L = ts.fc.lamda_L;
 	sData.lamda_region = ts.lamda_region;
 	sData.lamda_glue = ts.lamda_glue;
 	sData.Vgroups = ts.Vgroups;
@@ -985,16 +1014,16 @@ void optimization::slim_opt_igl(Tetralize_Set &ts, const uint32_t iter) {
 
 	igl::SLIMData::SLIM_ENERGY energy = igl::SLIMData::SYMMETRIC_DIRICHLET;// igl::SLIMData::CONFORMAL;
 
-	if (ts.projection)
-		slim_precompute(ts.V, ts.T, ts.V, sData, energy, ts.s, ts.sc,
-			ts.fc.ids_C, ts.fc.C,
-			ts.fc.ids_L, ts.fc.Axa_L, ts.fc.origin_L,
-			ts.fc.ids_T, ts.fc.normal_T, ts.fc.dis_T, ts.regionb, ts.regionbc, ts.projection, ts.global, ts.RT);
-	else
-		slim_precompute(ts.V, ts.T, ts.V, sData, energy, ts.b, ts.bc,
-			ts.fc.ids_C, ts.fc.C,
-			ts.fc.ids_L, ts.fc.Axa_L, ts.fc.origin_L,
-			ts.fc.ids_T, ts.fc.normal_T, ts.fc.dis_T, ts.regionb, ts.regionbc, ts.projection, ts.global, ts.RT);
+//	if (ts.projection)
+//		slim_precompute(ts.V, ts.T, ts.V, sData, energy, ts.s, ts.sc,
+//			ts.fc.ids_C, ts.fc.C,
+//			ts.fc.ids_L, ts.fc.Axa_L, ts.fc.origin_L,
+//			ts.fc.ids_T, ts.fc.normal_T, ts.fc.dis_T, ts.regionb, ts.regionbc, ts.projection, ts.global, ts.RT);
+//	else
+//		slim_precompute(ts.V, ts.T, ts.V, sData, energy, ts.b, ts.bc,
+//			ts.fc.ids_C, ts.fc.C,
+//			ts.fc.ids_L, ts.fc.Axa_L, ts.fc.origin_L,
+//			ts.fc.ids_T, ts.fc.normal_T, ts.fc.dis_T, ts.regionb, ts.regionbc, ts.projection, ts.global, ts.RT);
 	//timer.endStage("end prefactoring");
 
 	//timer.beginStage("solve ");

@@ -571,29 +571,33 @@ namespace common {
 	};
 
 	struct Feature_Constraints {
-		vector<Feature_V_Type> V_types;//interior, corner, line, regular
-		vector<int> V_ids;//Regular --> V/T, edge -- curve id, corner -- V
-		vector<bool> RV_type;//true -- T, false -- V
+//		vector<Feature_V_Type> V_types;//interior, corner, line, regular
+//		vector<int> V_ids;//Regular --> V/T, edge -- curve id, corner -- V
+//		vector<bool> RV_type;//true -- T, false -- V
 
-		//corner constraints
-		Eigen::VectorXi ids_C;
-		Eigen::MatrixXd C;
-		double lamda_C = 0;
-		//tagent plane constraints
-		Eigen::VectorXi ids_T;
-		Eigen::MatrixXd normal_T;
-		Eigen::VectorXd dis_T;
-		Eigen::MatrixXd V_T;
-		double lamda_T = 0;
-		//feature line constraints
-		uint32_t num_a;
-		Eigen::VectorXi ids_L;
-		Eigen::MatrixXd Axa_L;
-		Eigen::MatrixXd origin_L;
-		double lamda_L = 0;
-		//
-		vector<vector<uint32_t>> curve_vs;
-		vector<int> curveIds;
+//		//corner constraints
+//		Eigen::VectorXi ids_C;
+//		Eigen::MatrixXd C;
+//		double lamda_C = 0;
+//		//tagent plane constraints
+//		Eigen::VectorXi ids_T;
+//		Eigen::MatrixXd normal_T;
+//		Eigen::VectorXd dis_T;
+//		Eigen::MatrixXd V_T;
+//		double lamda_T = 0;
+//		//feature line constraints
+//		uint32_t num_a;
+//		Eigen::VectorXi ids_L;
+//		Eigen::MatrixXd Axa_L;
+//		Eigen::MatrixXd origin_L;
+//		double lamda_L = 0;
+//		//
+//		vector<vector<uint32_t>> curve_vs;
+//		vector<int> curveIds;
+
+		// soft boundary position constraints
+		Eigen::VectorXi b;
+		Eigen::MatrixXd bc;
 
 		Mapping_Info MI;
 	};
@@ -606,6 +610,7 @@ namespace common {
 		VectorXi b;
 		MatrixXd bc;
 		Feature_Constraints fc;
+		short mesh_type;
 		double lamda_b = 0;
 
 		//project back

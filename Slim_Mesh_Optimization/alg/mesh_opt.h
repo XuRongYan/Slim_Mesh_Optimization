@@ -24,7 +24,7 @@ class mesh_opt {
 public:
 	explicit mesh_opt(const arguments &args);
 
-	void hex_mesh_opt(const Mesh &hex_mesh_in, const Mesh &trimesh, Mesh &hex_mesh_out);
+	void hex_mesh_opt(const Mesh &hex_mesh_in, Mesh &hex_mesh_out);
 
 private:
 

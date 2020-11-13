@@ -30,6 +30,7 @@ public:
 	bool glueInternalNodesTriangles();
 
 	void slim_m_opt(Tetralize_Set &ts, const uint32_t iter, const int type, bool verbose=false);
+	void slim_m_opt_igl(Tetralize_Set &ts, const uint32_t iter, const int type, bool verbose=false);
 	void scaff_slim_m_opt(Tetralize_Set &ts, const uint32_t iter, Mesh_Domain &md, const int type);
 	void slim_opt(Tetralize_Set &ts, const uint32_t iter, bool loop);
 	void slim_opt_igl(Tetralize_Set &ts, const uint32_t iter);

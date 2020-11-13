@@ -13,34 +13,13 @@ struct SLIMData
   Eigen::MatrixXd V; // #V by 3 list of mesh vertex positions
   Eigen::MatrixXi F; // #F by 3/3 list of mesh faces (triangles/tets)
   SLIM_ENERGY slim_energy;
-
+  short mesh_type;
   double weight_opt = 1;
-  // Optional Input
-  // soft constraints
+
   Eigen::VectorXi b;
   Eigen::MatrixXd bc;
   double soft_const_p = 0;
-  //corner constraints
-  Eigen::VectorXi ids_C;
-  Eigen::MatrixXd C;
-  double lamda_C = 0;
-  //tagent plane constraints
-  Eigen::VectorXi ids_T;
-  Eigen::MatrixXd normal_T;
-  Eigen::VectorXd dis_T;
-  double lamda_T = 0;
-  //feature line constraints
-  uint32_t num_a;
-  Eigen::VectorXi ids_L;
-  Eigen::MatrixXd Axa_L;
-  Eigen::MatrixXd origin_L;
 
-  Eigen::VectorXd a_L;
-  double lamda_L = 0;
-//region
-  Eigen::VectorXi regionb;
-  Eigen::MatrixXd regionbc;
-  double lamda_region = 0;
 
   Tetralize_Set ts;
   double stop_threshold = 1.e-5;
