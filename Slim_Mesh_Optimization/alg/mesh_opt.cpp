@@ -858,12 +858,22 @@ bool mesh_opt::deformation(Mesh_Domain &md) {
 	double MESHRATIO = 1;
 	ts = Tetralize_Set();
 	ts.V = m.V.transpose();
-	ts.T.resize(m.Hs.size() * 8, 4);
 	Vector4i t;
-	for (auto &h : m.Hs) {
-		for (uint32_t i = 0; i < 8; i++) {
-			for (uint32_t j = 0; j < 4; j++) t[j] = h.vs[hex_tetra_table[i][j]];
-			ts.T.row(h.id * 8 + i) = t;
+	if (m.type == Hex) {
+		ts.T.resize(m.Hs.size() * 8, 4);
+		for (auto &h : m.Hs) {
+			for (uint32_t i = 0; i < 8; i++) {
+				for (uint32_t j = 0; j < 4; j++) t[j] = h.vs[hex_tetra_table[i][j]];
+				ts.T.row(h.id * 8 + i) = t;
+			}
+		}
+	} else if (m.type == Tet) {
+		ts.T.resize(m.Hs.size(), 4);
+		for (size_t i = 0; i < m.Hs.size(); i++) {
+			for (size_t j = 0; j < 4; j++) {
+				t[j] = m.Hs[i].vs[j];
+			}
+			ts.T.row(i) = t;
 		}
 	}
 
