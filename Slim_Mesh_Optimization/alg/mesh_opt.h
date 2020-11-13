@@ -27,45 +27,8 @@ public:
 	void hex_mesh_opt(const Mesh &hex_mesh_in, Mesh &hex_mesh_out);
 
 private:
-
-
-	void build_aabb_tree(Mesh &tmi, Treestr &a_tree,bool is_tri = false);
-
-	bool feature(Mesh &mesh);
-
-	bool hausdorff_ratio_check(Mesh &m0, Mesh &m1, double & hausdorff_dis_threshold);
-
-	bool surface_mapping(Mesh &tmi, Mesh_Domain &md);
-
-	void break_circles(Mesh_Feature &mf_temp, vector<bool> &Corner_tag, vector<vector<uint32_t>> &circle2curve_map);
-
-	bool node_mapping(Mesh_Feature &mf_temp, Feature_Graph &Tfg, Mesh_Domain &md);
-
-	bool curve_mapping(Feature_Graph &Tfg, Mesh_Domain &md);
-
-	bool reunion_circles(
-			Mesh_Feature &mf_temp, vector<bool> &Corner_tag, vector<vector<uint32_t>> &circle2curve_map, Mesh_Domain &md);
-
-	bool patch_mapping(Mesh_Domain &md);
-
-	void patch_trees(Mesh_Domain &md);
-
 	//deformation
 	bool deformation(Mesh_Domain &md);
-
-	bool smoothing(Mesh_Domain &md);
-
-	void projection_smooth(const Mesh &hmi, Feature_Constraints &fc);
-
-	bool feature_alignment(Mesh_Domain &md);
-
-	void dirty_local_feature_update(Mesh_Domain &md, std::vector<int> &Dirty_Vs);
-
-	void dirty_region_identification(Mesh_Domain &md, std::vector<int> &Dirty_Vs);
-
-	void dirty_graph_projection(Mesh_Domain &md, Feature_Constraints &fc, std::vector<int> &Dirty_Vs);
-
-	bool stop_criterior_satisfied(Mesh_Domain &md, const int iter_after_untangle, const Mesh &tm0, Mesh &tm1, bool &max_dis_satisified, bool & ave_dis_satisfied);
 
 public:
 #define	untangling_Iter_DEFAULT 30;

@@ -887,7 +887,7 @@ void optimization::slim_m_opt(Tetralize_Set &ts, const uint32_t iter, const int 
 	Timer<> timer;
 	//timer.beginStage("prefactoring ");
 	sData.stop_threshold = 1.e-7;
-	sData.soft_const_p = 1e1;
+	sData.soft_const_p = 1e8;
 	sData.exp_factor = 5.0;
 	sData.weight_opt = weight_opt;
 	sData.b = ts.b;
